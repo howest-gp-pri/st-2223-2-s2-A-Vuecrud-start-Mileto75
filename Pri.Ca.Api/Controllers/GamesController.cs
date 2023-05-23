@@ -76,6 +76,7 @@ namespace Pri.Ca.Api.Controllers
             return Ok();
         }
         [HttpPut]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Update(GameUpdateRequestDto gameUpdateRequestDto)
         {
             if (gameUpdateRequestDto.Categories.Count() == 0)
@@ -94,6 +95,7 @@ namespace Pri.Ca.Api.Controllers
             return Ok();
         }
         [HttpDelete("{id:int}")]
+        [Authorize(Policy = "Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _gameService.DeleteAsync(id);

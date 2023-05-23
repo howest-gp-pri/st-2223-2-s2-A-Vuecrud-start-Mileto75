@@ -3,7 +3,6 @@
     data: {
         pageTitle: "Our games",
         products: null,
-        product: null,
         url: "https://localhost:7047/api/Games",
         loaded: false,
         product: {
@@ -90,6 +89,28 @@
                     this.$refs.addImage.value = "";
                 })
                 .catch(error => console.log(error.response.data))
+        },
+        deleteProduct: async function () {
+            //we need an id
+            let id = this.product.id;
+            console.log(id);
+            //confirmation(best practice = modal)
+            if (confirm("Are you sure?")){
+                //call the delete api
+                let headers = {
+                    headers: {
+                        "Authorization": `bearer ${localStorage.token}`,
+                    }
+                };
+                await axios.delete(`https://localhost:7047/api/games/${id}`, headers)
+                    .then(response => {
+                        console.log(response.status);
+                        this.products.games.splice(this.products.games.indexOf(this.product),1);
+                        this.hideProductInfo();
+                    })
+                    .catch(error => console.log(error.response.data))
+            }
+            
         }
     },
 });
