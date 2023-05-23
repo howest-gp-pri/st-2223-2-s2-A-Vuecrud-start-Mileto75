@@ -5,13 +5,19 @@
         products: null,
         url: "https://localhost:7047/api/Games",
         loaded: false,
+        editMode: false,
         product: {
             name: "",
             image: "",
-            id: null,
+            id: "",
             categories: null,
         },
         addProduct: {
+            name: "",
+            categories: null,
+        },
+        updateProduct: {
+            id: "",
             name: "",
             categories: null,
         }
@@ -90,6 +96,36 @@
                 })
                 .catch(error => console.log(error.response.data))
         },
+        editProduct: async function () {
+            //set the formdata
+            let formData = new FormData();
+            formData.append("id", this.updateProduct.id);
+            formData.append("Name", this.updateProduct.name);
+            formData.append("Image", this.$refs.updateImage.files[0]);
+            this.updateProduct.categories.filter(cat => cat.isSelected === true)
+                .forEach((cat, index) => {
+                    formData.append(`categories[${index}]`, cat.value)
+                });
+            //set the headers
+            let headers = {
+                headers: {
+                    "Encoding-Type": "multipart/formdata",
+                    "Authorization": `bearer ${localStorage.token}`
+                }
+            }
+            //send the request
+            await axios.put("https://localhost:7047/api/games", formData, headers)
+                .then(response => {
+                    console.log(response.status);
+                    this.getProducts();
+                    this.hideProductInfo();
+                    this.toggleEditMode();
+                    this.updateProduct.name = "";
+                    this.updateProduct.id = "";
+                    this.$refs.updateImage.value = "";
+                })
+                .catch(error => console.log(error.response.data))
+        },
         deleteProduct: async function () {
             //we need an id
             let id = this.product.id;
@@ -110,7 +146,27 @@
                     })
                     .catch(error => console.log(error.response.data))
             }
-            
+        },
+        toggleEditMode: async function () {
+            this.editMode = !this.editMode;
+            if (this.editMode === true) {
+                //get the categories
+                let categories = await axios.get("https://localhost:7047/api/categories").then(response => response.data.categories)
+                    .catch(error => console.log(error.response.data))
+                this.updateProduct.categories = new Array();
+                this.updateProduct.id = this.product.id;
+                this.updateProduct.name = this.product.name;
+                categories.forEach(cat => {
+                    this.updateProduct.categories.push(
+                        {
+                            text: cat.name,
+                            value: cat.id,
+                            isSelected: this.product.categories.some(category => category.id == cat.id),
+                        }
+                    );
+                });
+
+            }
         }
     },
 });

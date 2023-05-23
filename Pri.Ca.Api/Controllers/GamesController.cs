@@ -77,7 +77,7 @@ namespace Pri.Ca.Api.Controllers
         }
         [HttpPut]
         [Authorize(Policy = "Admin")]
-        public async Task<IActionResult> Update(GameUpdateRequestDto gameUpdateRequestDto)
+        public async Task<IActionResult> Update([FromForm]GameUpdateRequestDto gameUpdateRequestDto)
         {
             if (gameUpdateRequestDto.Categories.Count() == 0)
             {
