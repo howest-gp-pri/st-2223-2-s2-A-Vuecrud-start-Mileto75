@@ -1,0 +1,21 @@
+﻿@model GamesIndexViewModel
+
+<h1>Our games</h1>
+@if(!Model.IsSuccess)
+{
+    <div class="alert alert-danger">
+        @foreach(var error in Model.Errors)
+        {
+            <b>@error</b>
+        }
+    </div>
+}
+else
+{
+    @foreach(var game in Model.Games)
+    {
+        @game.Name<br>
+    }
+}
+
+
