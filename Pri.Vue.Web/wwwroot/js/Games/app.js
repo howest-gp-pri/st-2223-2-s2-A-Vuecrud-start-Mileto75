@@ -35,9 +35,12 @@
             };
             axios.get(this.url,headers)
                 .then(result => this.products = result.data)
-                .catch(error => this.error = error.data)
+                .catch(error => {
+                    if (error.response.status == 401) {//needs to authenticate
+                        window.location = "/games/login";
+                    }
+                })
                 .finally(() => this.loaded = true);
-            console.log(this.products);
         },
         showProductInfo: function(product) {
             console.log(product.name);
@@ -94,7 +97,11 @@
                     this.addProduct.name = "";
                     this.$refs.addImage.value = "";
                 })
-                .catch(error => console.log(error.response.data))
+                .catch(error => {
+                    if (error.response.status == 403) {
+                        alert("You need admin rights!");
+                    }
+                })
         },
         editProduct: async function () {
             //set the formdata
@@ -124,7 +131,11 @@
                     this.updateProduct.id = "";
                     this.$refs.updateImage.value = "";
                 })
-                .catch(error => console.log(error.response.data))
+                .catch(error => {
+                    if (error.response.status == 403) {
+                        alert("You need admin rights!");
+                    }        
+                })
         },
         deleteProduct: async function () {
             //we need an id
@@ -144,7 +155,11 @@
                         this.products.games.splice(this.products.games.indexOf(this.product),1);
                         this.hideProductInfo();
                     })
-                    .catch(error => console.log(error.response.data))
+                    .catch(error => {
+                        if (error.response.status == 403) {
+                            alert("You need admin rights!");
+                        }
+                    })
             }
         },
         toggleEditMode: async function () {
